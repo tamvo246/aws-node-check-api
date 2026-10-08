@@ -1,0 +1,14 @@
+{
+  "name": "aws-node-check-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A small Node.js API for checking data after deployment to AWS",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
