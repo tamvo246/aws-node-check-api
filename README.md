@@ -1,51 +1,59 @@
-# AWS Node Check API
+# AWS Node Demo
 
-API Node.js nhỏ dùng để kiểm tra dữ liệu sau khi deploy lên AWS Elastic Beanstalk. Project không cần cài thêm package.
+An Express API connected to PostgreSQL, with `/health`, `GET /users`, and `POST /users` endpoints. The source code is in `src/server.js`, `src/db.js`, and `src/routes/users.js`.
 
-## Chạy tại máy
+## Run locally
 
-Yêu cầu Node.js 20 trở lên.
+Requires Node.js 20 or later and PostgreSQL. Install the dependencies, create a configuration file, and enter your database settings:
 
 ```bash
 cd aws-node-check-api
-npm start
+npm ci
+cp .env.example .env
 ```
 
-Ứng dụng lắng nghe trên `0.0.0.0` và cổng `PORT` do môi trường cung cấp; mặc định là `8080`.
-
-## Các path
-
-| Method | Path | Kết quả |
-| --- | --- | --- |
-| GET | `/` | Tên API và danh sách path |
-| GET | `/health` | `{"status":"ok"}` |
-| GET | `/api/items` | Danh sách 3 item mẫu |
-| GET | `/api/items?category=electronics` | Lọc theo category |
-| GET | `/api/items/2` | Chi tiết item có ID 2 |
-| GET | `/api/echo?value=hello` | Trả lại giá trị query đã nhận |
-
-Thử nhanh:
+Create the `aws_node_demo` database (or change `DB_NAME` in `.env`), then run `sql/init.sql` against that database to create the `users` table. For example, with `psql`:
 
 ```bash
-curl http://localhost:8080/health
-curl http://localhost:8080/api/items
-curl 'http://localhost:8080/api/items?category=electronics'
-curl 'http://localhost:8080/api/echo?value=hello%20AWS'
+psql -h localhost -U postgres -d aws_node_demo -f sql/init.sql
 ```
 
-Chạy kiểm tra tự động bằng `npm test`.
+Start the API:
 
-## Deploy lên AWS Elastic Beanstalk
+```bash
+npm run dev
+# Or: npm start
+```
 
-1. Trong thư mục project, tạo ZIP với các file nằm ngay ở gốc gói:
+The application uses port `3000` by default. Set `PORT` to use a different port.
+
+## Test the API
+
+```bash
+curl http://localhost:3000/health
+curl http://localhost:3000/users
+curl -X POST http://localhost:3000/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Tam","email":"tam@example.com"}'
+curl http://localhost:3000/users
+```
+
+`/health` reports the web server's status. `GET /users` reads records from PostgreSQL in descending ID order. `POST /users` creates a user and returns HTTP `201`; missing `name` or `email` returns `400`, and a duplicate email returns `409`.
+
+Run `npm test` to check the endpoints with a mocked database. These tests do not verify a real PostgreSQL connection.
+
+## Deploy to AWS Elastic Beanstalk
+
+1. Set up PostgreSQL (for example, on Amazon RDS), run `sql/init.sql` against the database, and ensure the Elastic Beanstalk environment can connect to it.
+2. Create a source bundle from the project directory. Do not include `.env` in the ZIP file:
 
    ```bash
-   zip -r ../aws-node-check-api.zip app.js package.json .ebextensions
+   zip -FS -r ../aws-node-check-api.zip src package.json package-lock.json .ebextensions
    ```
 
-2. Trong AWS Elastic Beanstalk, tạo application và **Web server environment**. Chọn platform **Node.js 24 running on Amazon Linux 2023** và upload `aws-node-check-api.zip` làm application code.
-3. Đợi environment chuyển sang trạng thái hoạt động, mở URL của environment và thử `/health`, `/api/items`, `/api/echo?value=hello`.
+3. Create a **Web server environment** in Elastic Beanstalk using the **Node.js 24 running on Amazon Linux 2023** platform, then upload the ZIP file. Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` as environment properties. Elastic Beanstalk provides `PORT` to the application.
+4. After deployment, test `/health`, `GET /users`, and `POST /users` using the environment URL.
 
-Elastic Beanstalk sẽ chạy lệnh `npm start` trong `package.json`, cấp biến `PORT` cho ứng dụng và dùng `/health` từ `.ebextensions/healthcheck.config` để kiểm tra ứng dụng. Dữ liệu item chỉ là dữ liệu mẫu trong bộ nhớ, không có database; deploy lại sẽ dùng đúng ba item được khai báo trong `app.js`.
+`.ebextensions/healthcheck.config` sets the health check path to `/health`. The `.env` file is for local use only and is ignored by Git.
 
-Tài liệu AWS: [Node.js platform](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_nodejs.container.html), [tạo source bundle](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/applications-sourcebundle.html), [các platform được hỗ trợ](https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html).
+AWS documentation: [Node.js platform](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_nodejs.container.html), [creating a source bundle](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/applications-sourcebundle.html), [supported platforms](https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html).
