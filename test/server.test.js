@@ -44,6 +44,40 @@ test('GET /users returns rows from PostgreSQL', async () => {
   }
 });
 
+test('GET /users/by-email/:email returns the matching user', async () => {
+  const originalQuery = pool.query;
+  pool.query = async (sql, values) => {
+    assert.equal(sql, 'SELECT * FROM users WHERE email = $1 LIMIT 1');
+    assert.deepEqual(values, ['tam@example.com']);
+    return { rows: [{ id: 2, name: 'Tam', email: 'tam@example.com' }] };
+  };
+
+  try {
+    const response = await fetch(`${baseUrl}/users/by-email/tam%40example.com`);
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), {
+      id: 2,
+      name: 'Tam',
+      email: 'tam@example.com',
+    });
+  } finally {
+    pool.query = originalQuery;
+  }
+});
+
+test('GET /users/by-email/:email returns 404 when the user is missing', async () => {
+  const originalQuery = pool.query;
+  pool.query = async () => ({ rows: [] });
+
+  try {
+    const response = await fetch(`${baseUrl}/users/by-email/missing%40example.com`);
+    assert.equal(response.status, 404);
+    assert.deepEqual(await response.json(), { error: 'User not found' });
+  } finally {
+    pool.query = originalQuery;
+  }
+});
+
 test('POST /users uses parameters and returns the inserted row', async () => {
   const originalQuery = pool.query;
   pool.query = async (sql, values) => {

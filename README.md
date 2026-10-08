@@ -1,6 +1,6 @@
 # AWS Node Demo
 
-An Express API connected to PostgreSQL, with `/health`, `GET /users`, and `POST /users` endpoints. The source code is in `src/server.js`, `src/db.js`, and `src/routes/users.js`.
+An Express API connected to PostgreSQL, with `/health`, `GET /users`, `GET /users/by-email/:email`, and `POST /users` endpoints. The source code is in `src/server.js`, `src/db.js`, and `src/routes/users.js`.
 
 ## Run locally
 
@@ -35,10 +35,11 @@ curl http://localhost:3000/users
 curl -X POST http://localhost:3000/users \
   -H 'Content-Type: application/json' \
   -d '{"name":"Tam","email":"tam@example.com"}'
+curl 'http://localhost:3000/users/by-email/tam%40example.com'
 curl http://localhost:3000/users
 ```
 
-`/health` reports the web server's status. `GET /users` reads records from PostgreSQL in descending ID order. `POST /users` creates a user and returns HTTP `201`; missing `name` or `email` returns `400`, and a duplicate email returns `409`.
+`/health` reports the web server's status. `GET /users` reads records from PostgreSQL in descending ID order. `GET /users/by-email/:email` returns one user or HTTP `404` if the email is not found. URL-encode the email when building the request path. `POST /users` creates a user and returns HTTP `201`; missing `name` or `email` returns `400`, and a duplicate email returns `409`.
 
 Run `npm test` to check the endpoints with a mocked database. These tests do not verify a real PostgreSQL connection.
 
@@ -52,7 +53,7 @@ Run `npm test` to check the endpoints with a mocked database. These tests do not
    ```
 
 3. Create a **Web server environment** in Elastic Beanstalk using the **Node.js 24 running on Amazon Linux 2023** platform, then upload the ZIP file. Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` as environment properties. Elastic Beanstalk provides `PORT` to the application.
-4. After deployment, test `/health`, `GET /users`, and `POST /users` using the environment URL.
+4. After deployment, test `/health`, `GET /users`, `GET /users/by-email/:email`, and `POST /users` using the environment URL.
 
 `.ebextensions/healthcheck.config` sets the health check path to `/health`. The `.env` file is for local use only and is ignored by Git.
 
