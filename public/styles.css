@@ -29,16 +29,24 @@ h2 { margin: 0 0 6px; font-size: 20px; letter-spacing: -0.02em; }
 
 form { display: grid; }
 label { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
-input { width: 100%; height: 46px; margin-bottom: 21px; padding: 0 14px; border: 1px solid #d7dfec; border-radius: 10px; background: #fff; color: #172236; font: inherit; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
-input::placeholder { color: #9aa6b7; }
-input:focus { border-color: #5276db; box-shadow: 0 0 0 3px rgba(82, 118, 219, 0.14); }
+input:not([type="file"]) { width: 100%; height: 46px; margin-bottom: 21px; padding: 0 14px; border: 1px solid #d7dfec; border-radius: 10px; background: #fff; color: #172236; font: inherit; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+input:not([type="file"])::placeholder { color: #9aa6b7; }
+input:not([type="file"]):focus { border-color: #5276db; box-shadow: 0 0 0 3px rgba(82, 118, 219, 0.14); }
 button { cursor: pointer; font: inherit; font-weight: 700; }
 button:disabled { cursor: wait; opacity: 0.65; }
-#submit-button { min-height: 48px; border: 0; border-radius: 10px; background: #315bd0; color: #fff; transition: background 0.15s; }
-#submit-button:hover:not(:disabled) { background: #2449b1; }
+#submit-button, #upload-button { min-height: 48px; border: 0; border-radius: 10px; background: #315bd0; color: #fff; transition: background 0.15s; }
+#submit-button:hover:not(:disabled), #upload-button:hover:not(:disabled) { background: #2449b1; }
 .form-status { min-height: 21px; margin: 14px 0 0; color: #66738a; font-size: 14px; }
 .form-status.success { color: #18714b; }
 .form-status.error { color: #b63838; }
+.upload-card { grid-column: 1 / -1; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.choose-file-button { justify-self: start; margin-bottom: 18px; }
+.file-preview { display: grid; place-items: center; min-height: 220px; margin-bottom: 18px; padding: 16px; border: 1px dashed #cbd6e8; border-radius: 12px; background: #f8faff; text-align: center; }
+.file-preview img:not([hidden]) { display: block; max-width: 100%; max-height: 320px; border-radius: 8px; object-fit: contain; }
+.preview-empty { margin: 0; color: #66738a; font-size: 14px; }
+.preview-details { max-width: 100%; margin: 12px 0 0; color: #536076; font-size: 13px; overflow-wrap: anywhere; }
+.upload-card .form-status { overflow-wrap: anywhere; }
 
 .list-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
 .secondary-button { flex-shrink: 0; padding: 9px 13px; border: 1px solid #d7dfec; border-radius: 9px; background: #fff; color: #315bd0; font-size: 13px; }

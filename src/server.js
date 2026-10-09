@@ -3,6 +3,7 @@ require('dotenv').config();
 const path = require('node:path');
 const express = require('express');
 const usersRouter = require('./routes/users');
+const filesRouter = require('./routes/files');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get('/health', (req, res) => {
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/users', usersRouter);
+app.use('/files', filesRouter);
 
 if (require.main === module) {
   const port = process.env.PORT || 3000;

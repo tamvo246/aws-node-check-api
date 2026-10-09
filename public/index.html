@@ -10,9 +10,9 @@
   <body>
     <main class="page">
       <header class="page-header">
-        <span class="eyebrow">NODE API · POSTGRESQL</span>
+        <span class="eyebrow">NODE API · POSTGRESQL · S3</span>
         <h1>User Management</h1>
-        <p>Add new users and review the records saved in your database.</p>
+        <p>Add users, review saved records, and upload files to S3.</p>
       </header>
 
       <div class="layout">
@@ -47,6 +47,28 @@
           </div>
           <p id="list-status" class="list-status" role="status" aria-live="polite"></p>
           <ul id="users-list" class="users-list"></ul>
+        </section>
+
+        <section class="card upload-card" aria-labelledby="upload-title">
+          <div class="card-header">
+            <span class="card-icon" aria-hidden="true">↑</span>
+            <div>
+              <h2 id="upload-title">Upload a file</h2>
+              <p>Select a file up to 10 MB to save in S3.</p>
+            </div>
+          </div>
+          <form id="upload-form">
+            <label for="upload-file">File</label>
+            <input id="upload-file" name="file" type="file" class="visually-hidden" aria-describedby="upload-status" />
+            <button id="choose-file-button" class="secondary-button choose-file-button" type="button">Choose file</button>
+            <div class="file-preview" aria-label="Selected file preview">
+              <p id="preview-empty" class="preview-empty">Image preview will appear here.</p>
+              <img id="preview-image" alt="" hidden />
+              <p id="preview-details" class="preview-details" hidden></p>
+            </div>
+            <button id="upload-button" type="submit">Upload file</button>
+            <p id="upload-status" class="form-status" role="status" aria-live="polite"></p>
+          </form>
         </section>
       </div>
     </main>
