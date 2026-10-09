@@ -10,10 +10,10 @@ const usersList = document.querySelector('#users-list');
 
 function renderUsers(users) {
   usersList.replaceChildren();
-  userCount.textContent = `${users.length} người dùng`;
+  userCount.textContent = `${users.length} user${users.length === 1 ? '' : 's'}`;
 
   if (users.length === 0) {
-    listStatus.textContent = 'Chưa có người dùng nào. Hãy thêm người dùng đầu tiên.';
+    listStatus.textContent = 'No users yet. Add the first one.';
     return;
   }
 
@@ -43,17 +43,17 @@ function renderUsers(users) {
 
 async function loadUsers() {
   refreshButton.disabled = true;
-  listStatus.textContent = 'Đang tải danh sách...';
+  listStatus.textContent = 'Loading users...';
 
   try {
     const response = await fetch('/users');
     if (!response.ok) {
-      throw new Error('Không thể tải danh sách người dùng. Kiểm tra kết nối database.');
+      throw new Error('Could not load users. Check your database connection.');
     }
 
     renderUsers(await response.json());
   } catch (error) {
-    userCount.textContent = 'Không thể tải dữ liệu';
+    userCount.textContent = 'Unable to load data';
     listStatus.textContent = error.message;
   } finally {
     refreshButton.disabled = false;
@@ -64,7 +64,7 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   submitButton.disabled = true;
   formStatus.className = 'form-status';
-  formStatus.textContent = 'Đang thêm người dùng...';
+  formStatus.textContent = 'Adding user...';
 
   try {
     const response = await fetch('/users', {
@@ -79,14 +79,14 @@ form.addEventListener('submit', async (event) => {
     if (!response.ok) {
       const body = await response.json().catch(() => ({}));
       if (response.status === 409) {
-        throw new Error('Email này đã tồn tại.');
+        throw new Error('This email is already in use.');
       }
-      throw new Error(body.error || 'Không thể thêm người dùng.');
+      throw new Error(body.error || 'Could not add user.');
     }
 
     form.reset();
     formStatus.classList.add('success');
-    formStatus.textContent = 'Đã thêm người dùng thành công.';
+    formStatus.textContent = 'User added successfully.';
     await loadUsers();
   } catch (error) {
     formStatus.classList.add('error');
