@@ -1,6 +1,6 @@
 # AWS Node Demo
 
-An Express API connected to PostgreSQL, with `/health`, `GET /users`, `GET /users/by-email/:email`, and `POST /users` endpoints. The source code is in `src/server.js`, `src/db.js`, and `src/routes/users.js`.
+An Express API connected to PostgreSQL, with a small web UI for adding users. The API includes `/health`, `GET /users`, `GET /users/by-email/:email`, and `POST /users`. The source code is in `src/server.js`, `src/db.js`, and `src/routes/users.js`; the UI is in `public/`.
 
 ## Run locally
 
@@ -27,6 +27,10 @@ npm run dev
 
 The application uses port `3000` by default. Set `PORT` to use a different port.
 
+Open `http://localhost:3000/` to enter a user's name and email and see the saved users. The form sends `POST /users` and refreshes the list after a successful response.
+
+For a local PostgreSQL instance, leave `DB_SSL_CA` empty. If you connect to Amazon RDS with certificate verification, set `DB_SSL_CA` to the absolute path of the RDS CA bundle on the machine running the API. The application reads that file only when `DB_SSL_CA` is set.
+
 ## Test the API
 
 ```bash
@@ -49,12 +53,12 @@ Run `npm test` to check the endpoints with a mocked database. These tests do not
 2. Create a source bundle from the project directory. Do not include `.env` in the ZIP file:
 
    ```bash
-   zip -FS -r ../aws-node-check-api.zip src package.json package-lock.json .ebextensions
+   zip -FS -r ../aws-node-check-api.zip src public package.json package-lock.json .ebextensions
    ```
 
-3. Create a **Web server environment** in Elastic Beanstalk using the **Node.js 24 running on Amazon Linux 2023** platform, then upload the ZIP file. Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` as environment properties. Elastic Beanstalk provides `PORT` to the application.
-4. After deployment, test `/health`, `GET /users`, `GET /users/by-email/:email`, and `POST /users` using the environment URL.
+3. Create a **Web server environment** in Elastic Beanstalk using the **Node.js 24 running on Amazon Linux 2023** platform, then upload the ZIP file. Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` as environment properties. If using the RDS CA bundle, also set `DB_SSL_CA` to its path on the instance, for example `/home/ec2-user/certs/global-bundle.pem`. Ensure the file exists there. Elastic Beanstalk provides `PORT` to the application.
+4. After deployment, open the environment URL to use the UI, then test `/health`, `GET /users`, `GET /users/by-email/:email`, and `POST /users`.
 
 `.ebextensions/healthcheck.config` sets the health check path to `/health`. The `.env` file is for local use only and is ignored by Git.
 
-AWS documentation: [Node.js platform](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_nodejs.container.html), [creating a source bundle](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/applications-sourcebundle.html), [supported platforms](https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html).
+AWS documentation: [Node.js platform](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_nodejs.container.html), [creating a source bundle](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/applications-sourcebundle.html), [supported platforms](https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html), [Amazon RDS CA bundles](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html).

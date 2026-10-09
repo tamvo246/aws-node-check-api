@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý người dùng</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <main class="page">
+      <header class="page-header">
+        <span class="eyebrow">NODE API · POSTGRESQL</span>
+        <h1>Quản lý người dùng</h1>
+        <p>Thêm người dùng mới và kiểm tra dữ liệu đã lưu trong database.</p>
+      </header>
+
+      <div class="layout">
+        <section class="card" aria-labelledby="form-title">
+          <div class="card-header">
+            <span class="card-icon" aria-hidden="true">+</span>
+            <div>
+              <h2 id="form-title">Thêm người dùng</h2>
+              <p>Nhập tên và địa chỉ email để tạo tài khoản.</p>
+            </div>
+          </div>
+
+          <form id="user-form">
+            <label for="name">Tên</label>
+            <input id="name" name="name" type="text" autocomplete="name" maxlength="100" placeholder="Ví dụ: Thanh Tam" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="tam@example.com" required />
+
+            <button id="submit-button" type="submit">Thêm người dùng</button>
+            <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="card" aria-labelledby="list-title">
+          <div class="list-header">
+            <div>
+              <h2 id="list-title">Danh sách người dùng</h2>
+              <p id="user-count">Đang tải dữ liệu...</p>
+            </div>
+            <button id="refresh-button" class="secondary-button" type="button">Tải lại</button>
+          </div>
+          <p id="list-status" class="list-status" role="status" aria-live="polite"></p>
+          <ul id="users-list" class="users-list"></ul>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

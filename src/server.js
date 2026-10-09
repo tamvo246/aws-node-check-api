@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const path = require('node:path');
 const express = require('express');
 const usersRouter = require('./routes/users');
 
@@ -14,6 +15,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/users', usersRouter);
 
 if (require.main === module) {

@@ -1,21 +1,24 @@
-const fs = require("fs");
-const { Pool } = require("pg");
-
 require("dotenv").config();
+
+const fs = require("fs");
+const path = require("path");
+const { Pool } = require("pg");
 
 const pool = new Pool({
   host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT || 5432),
+  port: Number(process.env.DB_PORT),
   database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
 
   ssl: {
-    rejectUnauthorized: true,
     ca: fs.readFileSync(
-      "/home/ec2-user/certs/global-bundle.pem",
+      path.join(__dirname, "../certs/global-bundle.pem"),
       "utf8"
     ),
+    servername:
+      "node-db-demo.ctuek6imkxau.ap-southeast-2.rds.amazonaws.com",
+    rejectUnauthorized: true,
   },
 });
 
